@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -35,6 +35,7 @@ namespace V6
 
                 foreach (var item in records)
                 {
+
                     if (records.ToList().IndexOf(item) > 0) Person.People.Add(Person.FromCsvFile(item));
                     
                 }
@@ -59,7 +60,7 @@ namespace V6
             Console.WriteLine("4. Record Remover");
             Console.WriteLine("5. Record Editer");
             Console.WriteLine("6. Save to Record's File");
-            Console.WriteLine("7. Exit without saving!\n");
+            Console.WriteLine("7. Exit\n");
 
             string rightselec = Console.ReadLine();
 
@@ -107,7 +108,7 @@ namespace V6
                     Person.SaveToCsv();
 
                     break;
-                
+
                 case "7":
 
                     Console.Clear();
@@ -143,7 +144,6 @@ namespace V6
                 {
 
                     id = numInput("\nEnter the ID of the record you want to edit: ");
-                    editing = !editing;
                     Console.WriteLine();
                     person = Finder(people, id);
                     if (person.Id == "") return;
@@ -152,11 +152,11 @@ namespace V6
 
                 }
 
-                if (UniqueID(id) && editing)
+                if (UniqueID(id) && !editing)
                 {
 
                     Console.WriteLine("\nThis ID has already been recorded.");
-                    continue;
+                    break;
 
                 }
 
@@ -164,13 +164,13 @@ namespace V6
                 lname = stdInput("\nEnter the Last Name: ");
                 int age = Convert.ToInt32(numInput("\nEnter the Age: "));
                 while (age < 7 || age > 120) age = Convert.ToInt32(numInput("\nEnter the Age: "));
-                
+
                 do
                 {
-                
+
                     Console.WriteLine("\nEnter the Sex: [M|F]");
                     sex = Convert.ToChar(Console.ReadLine().ToUpper());
-
+                    
                 } while (sex != 'M' && sex != 'F');
 
                 if (sex == 'M') csex = 1;
@@ -181,7 +181,7 @@ namespace V6
 
                     Console.WriteLine("\nEnter the Marital Status: [S|M]");
                     maritalsts = Convert.ToChar(Console.ReadLine().ToUpper());
-
+                    
                 } while (maritalsts != 'S' && maritalsts != 'M');
 
                 if (maritalsts == 'M') cmaritalsts = 1;
@@ -192,7 +192,7 @@ namespace V6
 
                     Console.WriteLine("\nEnter the Education Level: [I|M|G|P]");
                     grade = Convert.ToChar(Console.ReadLine().ToUpper());
-
+                    
                 } while (grade != 'I' && grade != 'M' && grade != 'G' && grade != 'P');
 
                 switch (grade)
@@ -218,7 +218,6 @@ namespace V6
                     
                     fpw = pwInput("\nEnter the Password: ");
                     spw = pwInput("\nConfirm the Password: ");
-
                     if (fpw != spw) Console.WriteLine("\nPasswords do not match!");
 
                 } while (fpw != spw);
@@ -234,38 +233,43 @@ namespace V6
                     case "s":
 
                         Console.Clear();
-                        if (editing)
+                        if (!editing)
                         {
-                            
+
                             var nperson = Person.FromCsvFile($"{id},{fname},{lname},{saving},{fpw},{data}");
                             Person.People.Add(nperson);
                             Console.WriteLine("\nRecord registered correctly!\n");
-                         
+
                         }
 
                         else
                         {
 
                             if (person.FullName != fname + " " + lname) Console.WriteLine("\nChanges in the Full Name made successfully!");
-
-                            if (person.Savings != Convert.ToDouble(saving)) Console.WriteLine("\nChanges in the Savings made successfully!");
-
-                            if (person.Password != fpw) Console.WriteLine("\nChanges in the Password made successfully!");
-
+                            
                             if (person.Age != age) Console.WriteLine("\nChanges in the Age made successfully!");
 
                             if ((int)person.Sex != csex) Console.WriteLine("\nChanges in the Sex made successfully!");
 
                             if ((int)person.MaritalStatus != cmaritalsts) Console.WriteLine("\nChanges in the Marital Status made successfully!");
 
-                            if ((int)person.Grade != cgrade) Console.WriteLine("\nChanges in the Grade made successfully!");
+                            if ((int)person.Grade != cgrade) Console.WriteLine("\nChanges in the Education Level made successfully!");
 
-                            if ((person.FullName == fname + " " + lname) && (person.Savings == Convert.ToDouble(saving)) && (person.Password == fpw) && (person.Age == age) && ((int)person.Sex == csex) && ((int)person.MaritalStatus == cmaritalsts) && ((int)person.Grade == cgrade)) Console.WriteLine("\nIt appears no changes has been made.");
+                            if (person.Savings != Convert.ToDouble(saving)) Console.WriteLine("\nChanges in the Savings made successfully!");
+
+                            if (person.Password != fpw) Console.WriteLine("\nChanges in the Password made successfully!");
+
+                            if ((person.FullName == fname + " " + lname) && (person.Age == age) && ((int)person.Sex == csex) && ((int)person.MaritalStatus == cmaritalsts) && ((int)person.Grade == cgrade) && (person.Savings == Convert.ToDouble(saving)) && (person.Password == fpw))
+                            {
+
+                                Console.WriteLine("\nIt appears no changes has been made.");
+
+                            }
 
                             var nperson = Person.FromCsvFile($"{id},{fname},{lname},{saving},{fpw},{data}");
                             var i = people.FindIndex(a => a.Id == nperson.Id);
                             people[i] = nperson;
-
+                            
                         }
 
                         break;
@@ -273,7 +277,7 @@ namespace V6
                     case "d":
 
                         Console.Clear();
-                        if (editing) Procedure(Person.People, false);
+                        if (!editing) Procedure(Person.People, false);
                         else Procedure(Person.People, true);
 
                         break;
@@ -311,30 +315,6 @@ namespace V6
                 
             }
 
-            /* Console.WriteLine("");
-            var content = File.ReadAllLines(filepath);
-            
-            foreach (var lines in content)
-            {
-
-                var element = lines.Split(",");
-                var record = element[0] + "," + element[1] + "," + element[2] + "," + element[3] + "," + element[4];
-                if (element.Contains("ID"))
-                {
-
-                    Console.WriteLine(record + ",Age,Sex,Marital Status,Education Level");
-
-                }
-                
-                else
-                {
-
-                    Console.WriteLine(record + Decode(Convert.ToInt32(element[5])));
-
-                }
-
-            } */
-
         }
 
         static Person Finder(List<Person> Person, string id = null)
@@ -342,7 +322,7 @@ namespace V6
             
             if (id == null) id = numInput("\nEnter the ID of the record you want:");
 
-            Person person = new Person("","","",0,"",0);
+            Person person = new Person("", "", "", 0, "", 0);
 
             foreach (var item in Person)
             {
@@ -361,49 +341,20 @@ namespace V6
 
             return person;
 
-            /* int counter = 0;
-            var content = File.ReadAllLines(filepath);
-
-            foreach(var line in content)
-            {
-               
-                var identity = line.Split(",");
-
-                if (identity[0] == id)
-                {
-
-                    Console.Clear();
-                    string header = "\nID,First Name,Last Name,Savings,Password,Age,Sex,Marital Status,Education Level\n";
-                    var record = identity[0] + "," + identity[1] + "," + identity[2] + "," + identity[3] + "," + identity[4];
-                    Console.WriteLine("Record found!\n" + header + record + Decode(Convert.ToInt32(identity[5])));
-                    counter = 1;
-
-                }
-
-            }
-
-            if (counter == 0)
-            {
-                
-                Console.Clear();
-                Console.WriteLine("That record doesn't exist.");
-
-            } */
-
         }
 
         public static bool UniqueID(string id)
         {
 
             bool verify = false;
-            var content = Person.People;
+            var content = File.ReadAllLines(filepath);
 
             foreach (var item in content)
             {
 
-                var exists = item.Id;
+                var exists = item.Split(",");
 
-                if (exists == id)
+                if (exists[0] == id)
                 {
 
                     return !verify;
@@ -427,7 +378,7 @@ namespace V6
 
             char path = Convert.ToChar(Console.ReadLine().ToLower());
 
-            switch(path)
+            switch (path)
             {
 
                 case 'y':
@@ -442,9 +393,9 @@ namespace V6
                     catch (Exception exc)
                     {
 
-                        throw new ApplicationException("An error has ocurred: ", exc);
-                        
-                    } 
+                        throw new ApplicationException("\nAn error has ocurred: ", exc);
+
+                    }
 
                     break;
 
@@ -452,203 +403,14 @@ namespace V6
                     break;
 
                 default:
-                    
+
                     Console.WriteLine("\nSomething went wrong!");
 
                     break;
 
             }
 
-            /* bool counter = false;
-            var content = File.ReadAllLines(filepath);
-            
-            System.IO.StreamWriter file = new System.IO.StreamWriter(filepath, false);
-
-            foreach (var item in content)
-            {
-
-                var element = item.Split(",");
-
-                if (element[0] == id)
-                {
-
-                    Console.Clear();
-                    string header = "ID,First Name,Last Name,Savings,Password,Age,Sex,Marital Status,Education Level\n";
-                    var record = element[0] + "," + element[1] + "," + element[2] + "," + element[3] + "," + element[4];
-                    Console.WriteLine(header + record + Decode(Convert.ToInt32(element[5])));
-                    Console.WriteLine("\nThe record has been deleted.");
-                    counter = !counter;
-                    break;
-
-                }
-
-                file.WriteLine(item);
-
-            }
-
-            if (counter == false)
-            {
-
-                Console.Clear();
-                Console.WriteLine("That record is not in the Registry File.");
-
-            }
-
-            file.Close(); */
-
         }
-
-        /* public static void Edit(string id)
-        {
-
-            bool counter = false;
-            string select = "";
-            var content = File.ReadAllLines(filepath);
-            System.IO.StreamWriter file = new System.IO.StreamWriter(filepath, false);
-
-            foreach (var item in content)
-            {
-
-                var element = item.Split(",");
-
-                if (element[0] == id)
-                {
-
-                    Console.Clear();
-                    Console.WriteLine("Proceed to make the changes!");
-                    Console.WriteLine("\nEnter the new First Name: ");
-                    string fname = stdInput();
-                    Console.WriteLine("\nEnter the new Last Name: ");
-                    string lname = stdInput();
-                    int age = Convert.ToInt32(numInput("\nEnter the Age:"));
-                    Console.WriteLine("\nEnter the Sex: [M|F]");
-                    char sex = Convert.ToChar(Console.ReadLine().ToUpper());
-                    Console.WriteLine("\nEnter the Marital Status: [S|M]");
-                    char maritalsts = Convert.ToChar(Console.ReadLine().ToUpper());
-                    Console.WriteLine("\nEnter the Education Level: [I|M|G|P]");
-                    char grade = Convert.ToChar(Console.ReadLine().ToUpper());
-                    Console.WriteLine("\nEnter the new Savings: ");
-                    string saving = decInput();
-                    string fpw, spw;
-
-                    do
-                    {
-
-                        Console.WriteLine("\nEnter the new Password: ");
-                        fpw = pwInput();
-                        Console.WriteLine("\nConfirm the new Password: ");
-                        spw = pwInput();
-
-                    } while (fpw != spw);
-
-                    int data = Encode(age, sex, maritalsts, grade);
-                    var record = $"{id},{fname},{lname},{saving},{fpw}";
-
-                    Console.WriteLine("\nSave [S]; Discard[D]; Exit[E]");
-                    string Selection = Console.ReadLine();
-
-                    switch (Selection.ToLower())
-                    {
-
-                        case "s":
-
-                            file.WriteLine(record + $",{data}");
-                            if (element[1] != fname)
-                            {
-
-                                Console.WriteLine("\nChanges in the First Name made successfully!");
-
-                            }
-
-                            if (element[2] != lname)
-                            {
-
-                                Console.WriteLine("\nChanges in the Last Name made successfully!");
-
-                            }
-
-                            if (element[3] != saving)
-                            {
-
-                                Console.WriteLine("\nChanges in the Savings made successfully!");
-
-                            }
-
-                            if (element[4] != fpw)
-                            {
-
-                                Console.WriteLine("\nChanges in the Password made successfully!");
-
-                            }
-
-                            if (Convert.ToInt32(element[5]) != data)
-                            {
-
-                                Console.WriteLine("\nChanges in the Data made successfully!");
-
-                            }
-
-                            if ((element[1] == fname) && (element[2] == lname) && (element[3] == saving) && (element[4] == fpw) && (Convert.ToInt32(element[5]) == data))
-                            {
-
-                                Console.WriteLine("\nIt appears no changes has been made.");
-
-                            }
-
-                            counter = !counter;
-                            select = "success";
-                            string header = "\nID,First Name,Last Name,Savings,Password,Age,Sex,Marital Status,Education Level\n";
-                            Console.WriteLine(header + record + Decode(data));
-
-                            break;
-
-                        case "d":
-
-                            file.WriteLine(item);
-                            select = "discard";
-
-                            break;
-
-                        case "e":
-
-                            file.WriteLine(item);
-                            select = "exit";
-
-                            break;
-
-                        default:
-
-                            Console.WriteLine("\nSomething went wrong, try again.");
-                            file.WriteLine(item);
-                            select = "failed";
-
-                            break;
-
-                    }
-
-                    if (select.Length > 1)
-                        continue;
-
-                }
-
-                file.WriteLine(item);
-
-            }
-
-            if (counter == false)
-            {
-
-                Console.Clear();
-                Console.WriteLine("That record is not in the Registry File or its edit was aborted.");
-
-            }
-
-            file.Close();
-
-            if (select == "discard")
-                Edit(id);
-
-        } */
 
         public static string pwInput(string writeline)
         {
@@ -709,7 +471,7 @@ namespace V6
         {
 
             Console.WriteLine(writeline);
-            
+
             string input = "";
 
             while (true)
@@ -917,7 +679,7 @@ namespace V6
 
         }
 
-        public static string Decode(int data)
+        /* public static string Decode(int data)
         {
 
             int age = data >> 4;
@@ -993,7 +755,7 @@ namespace V6
 
             return $",{age},{sexP},{maritalstsP},{gradeP}";
 
-        }
+        } */
 
     }
 }
